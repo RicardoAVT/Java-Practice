@@ -23,18 +23,13 @@ public class Cinema {
         return seat;
     }
 
-    public static String checkTicketPrice(int rows, int seats, int row) {
-        return row >= (rows / 2 + 1) && rows * seats > 60 ? "Ticket price: $8" : "Ticket price: $10";
-    }
-
     public static void showMenu(int rows, int seats) {
         Scanner sc = new Scanner(System.in);
         char[][] reserved = cinemaSeats(rows, seats);
         int row;
         int seat;
         int ticketsPurchased = 0;
-
-
+        int amountTicketsSold = 0;
 
         System.out.println("1. Show the seats");
         System.out.println("2. Buy a ticket");
@@ -55,7 +50,7 @@ public class Cinema {
                     System.out.println("Enter a seat number in that row: ");
                     seat = sc.nextInt();
 
-                    while (row < 0 || seat > seats) {
+                    while (row < 0 || row > rows || seat > seats || seat < 0) {
                         System.out.println("Wrong input!");
                         System.out.println("Enter a row number: ");
                         row = sc.nextInt();
@@ -63,7 +58,7 @@ public class Cinema {
                         seat = sc.nextInt();
                     }
 
-                    while (reserved[row - 1][seat - 1] == 'B'){
+                    while (reserved[row - 1][seat - 1] == 'B') {
                         System.out.println("That ticket has already been purchased!");
 
                         System.out.println("Enter a row number: ");
@@ -73,13 +68,15 @@ public class Cinema {
                     }
                     reserved[row - 1][seat - 1] = 'B';
 
-                    System.out.println(checkTicketPrice(rows, seats, row));
+                    System.out.println("Ticket price: $" + checkTicketPrice(rows, seats, row));
                     ticketsPurchased += 1;
+                    amountTicketsSold += checkTicketPrice(rows, seats, row);
                     break;
                 case 3:
                     System.out.println("Number of purchased tickets: " + ticketsPurchased);
-                    System.out.println("Percentage: " + String.format("%.2f", ((float) ticketsPurchased/(rows*seats)*100)) + "%");
-
+                    System.out.println("Percentage: " + String.format("%.2f", ((float) ticketsPurchased / (rows * seats) * 100)) + "%");
+                    System.out.println("Current income: $" + amountTicketsSold);
+                    System.out.println("Total income: $" + calculateProfit(rows, seats));
                 case 0:
                     break;
             }
@@ -91,7 +88,7 @@ public class Cinema {
         }
     }
 
-    public static char[][] reservedSeats(char[][] cinemaSeats,int rows, int seats) {
+    public static char[][] reservedSeats(char[][] cinemaSeats, int rows, int seats) {
 
         char[][] reserved;
 
@@ -110,5 +107,18 @@ public class Cinema {
         }
         reserved = cinemaSeats;
         return reserved;
+    }
+
+    public static int calculateProfit(int rows, int seats) {
+        return rows * seats < 60 ? (rows * seats) * 10 : isOdd(rows, seats);
+    }
+
+    public static int isOdd(int rows, int seats) {
+        return rows % 2 == 1 ? ((rows / 2 * seats) * 10 + (((rows / 2 + 1) * seats) * 8)) :
+                (((rows / 2) * seats) * 10 + ((rows / 2) * seats) * 8);
+    }
+
+    public static int checkTicketPrice(int rows, int seats, int row) {
+        return row >= (rows / 2 + 1) && rows * seats > 60 ? 8 : 10;
     }
 }
