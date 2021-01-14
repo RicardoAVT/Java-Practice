@@ -41,7 +41,6 @@ public class Cinema {
         while (option != 0) {
             switch (option) {
                 case 1:
-                    reservedSeats(reserved, rows, seats);
                     reserved = reservedSeats(reserved, rows, seats);
                     break;
                 case 2:
